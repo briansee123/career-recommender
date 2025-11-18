@@ -79,6 +79,7 @@ Route::prefix('user')->group(function () {
 // =====================
 Route::prefix('admin')->group(function () {
 
+    // BASIC ADMIN PAGES
     Route::get('/dashboard', function () {
         return view('admin.dashboard');
     })->name('admin.dashboard');
@@ -87,10 +88,6 @@ Route::prefix('admin')->group(function () {
         return view('admin.users');
     })->name('admin.users');
 
-    Route::get('/jobs', function () {
-        return view('admin.jobs');
-    })->name('admin.jobs');
-
     Route::get('/tests', function () {
         return view('admin.tests');
     })->name('admin.tests');
@@ -98,4 +95,25 @@ Route::prefix('admin')->group(function () {
     Route::get('/profile', function () {
         return view('admin.profile');
     })->name('admin.profile');
+
+
+    // ===== ADMIN JOB MANAGEMENT (REAL CONTROLLER) =====
+    Route::get('/jobs', [\App\Http\Controllers\JobController::class, 'index'])
+        ->name('admin.jobs');
+
+    Route::get('/jobs/create', [\App\Http\Controllers\JobController::class, 'create'])
+        ->name('admin.job.create');
+
+    Route::post('/jobs/store', [\App\Http\Controllers\JobController::class, 'store'])
+        ->name('admin.job.store');
+
+    Route::get('/jobs/edit/{id}', [\App\Http\Controllers\JobController::class, 'edit'])
+        ->name('admin.job.edit');
+
+    Route::post('/jobs/update/{id}', [\App\Http\Controllers\JobController::class, 'update'])
+        ->name('admin.job.update');
+
+    Route::get('/jobs/delete/{id}', [\App\Http\Controllers\JobController::class, 'delete'])
+        ->name('admin.job.delete');
 });
+
