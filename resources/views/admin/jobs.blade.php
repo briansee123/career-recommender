@@ -11,15 +11,15 @@
     }
 
     .btn-add {
-        background: #28a745;
-        color: white;
-        padding: 10px 16px;
-        text-decoration: none;
-        border-radius: 6px;
-        font-weight: bold;
-        float: right;
-        margin-bottom: 15px;
-    }
+    background: #28a745;
+    color: white;
+    padding: 10px 16px;
+    text-decoration: none;
+    border-radius: 6px;
+    font-weight: bold;
+    margin-bottom: 15px;
+}
+
 
     .btn-add:hover {
         background: #218838;
@@ -63,14 +63,29 @@
     .btn-edit:hover { background: #0056b3; }
     .btn-delete:hover { background: #c82333; }
 
+    .alert-success {
+        background: #d4edda; 
+        padding:12px; 
+        border-radius:6px; 
+        color:#155724; 
+        margin-bottom:15px;
+    }
 </style>
 @endpush
 
 @section('content')
 
-<div class="page-title">Job Management</div>
+{{-- SUCCESS MESSAGE --}}
+@if(session('success'))
+    <div class="alert-success">{{ session('success') }}</div>
+@endif
 
-<a href="{{ route('admin.job.create') }}" class="btn-add">+ Add New Job</a>
+<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+    <div class="page-title">Job Management</div>
+
+    <a href="{{ route('admin.job.create') }}" class="btn-add">+ Add New Job</a>
+</div>
+
 
 <table>
     <tr>
@@ -89,8 +104,15 @@
         <td>{{ $job->salary }}</td>
         <td>
             <a href="{{ route('admin.job.edit', $job->id) }}" class="btn-edit">Edit</a>
-            <a href="{{ route('admin.job.delete', $job->id) }}" class="btn-delete"
-               onclick="return confirm('Delete this job?')">Delete</a>
+            <form action="{{ route('admin.job.delete', $job->id) }}" method="POST" style="display:inline;">
+    @csrf
+    @method('DELETE')
+
+    <button class="btn-delete" onclick="return confirm('Delete this job?')">
+        Delete
+    </button>
+</form>
+
         </td>
     </tr>
     @endforeach

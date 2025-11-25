@@ -2,6 +2,9 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\JobController;
+use App\Http\Controllers\TestQuestionController;
+use App\Http\Controllers\UserTestController;
 
 // =====================
 //  PUBLIC DEFAULT ROUTE
@@ -16,7 +19,7 @@ Route::get('/', function () {
 // =====================
 Route::prefix('user')->group(function () {
 
-    // === AUTH PAGES ===
+    // AUTH PAGES
     Route::get('/login', function () {
         return view('user.login');
     })->name('login');
@@ -25,95 +28,68 @@ Route::prefix('user')->group(function () {
         return view('user.signup');
     })->name('signup');
 
-    // === AUTH POST ROUTES (real backend) ===
+    // AUTH BACKEND
     Route::post('/login', [AuthController::class, 'login'])->name('login.post');
     Route::post('/signup', [AuthController::class, 'signup'])->name('signup.post');
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
-    // === USER PAGES ===
-    Route::get('/home', function () {
-        return view('user.homepage');
-    })->name('home');
+    // USER PAGES
+    Route::get('/home', fn() => view('user.homepage'))->name('home');
+    Route::get('/profile', fn() => view('user.profile'))->name('profile.show');
+    Route::get('/test', fn() => view('user.test'))->name('test.show');
+    Route::get('/jobs', fn() => view('user.jobs'))->name('jobs.list');
+    Route::get('/apply/{id}', fn() => view('user.apply'))->name('job.apply');
+    Route::get('/resume', fn() => view('user.buildresume'))->name('resume.builder');
 
-    Route::get('/profile', function () {
-        return view('user.profile');
-    })->name('profile.show');
+    // TEMPORARY PLACEHOLDERS
+    Route::get('/job/{id}', fn($id) => "Temporary Job Details - ID: $id")->name('job.show');
+    Route::post('/resume', fn() => "Temporary resume stored.")->name('resume.store');
 
-    Route::get('/test', function () {
-        return view('user.test');
-    })->name('test.show');
-
-    Route::get('/jobs', function () {
-        return view('user.jobs');
-    })->name('jobs.list');
-
-    Route::get('/apply/{id}', function () {
-        return view('user.apply');
-    })->name('job.apply');
-
-    Route::get('/resume', function () {
-        return view('user.buildresume');
-    })->name('resume.builder');
+Route::get('/test/start', [UserTestController::class, 'start'])->name('user.test.start');
+Route::post('/test/answer', [UserTestController::class, 'answer'])->name('user.test.answer');
+Route::get('/test/result', [UserTestController::class, 'result'])->name('user.test.result');
 
 
-    // ============================
-    // TEMPORARY PLACEHOLDER ROUTES
-    // ============================
-
-    Route::get('/job/{id}', function ($id) {
-        return "Temporary Job Details - ID: $id";
-    })->name('job.show');
-
-    Route::post('/apply/{id}', function ($id) {
-        return "Temporary submit for job ID $id";
-    })->name('job.submitApplication');
-
-    Route::post('/resume', function () {
-        return "Temporary resume stored.";
-    })->name('resume.store');
 });
-
 
 // =====================
 // ADMIN ROUTES
 // =====================
 Route::prefix('admin')->group(function () {
 
-    // BASIC ADMIN PAGES
-    Route::get('/dashboard', function () {
-        return view('admin.dashboard');
-    })->name('admin.dashboard');
+    // STATIC PAGES
+    Route::get('/dashboard', fn() => view('admin.dashboard'))->name('admin.dashboard');
+    Route::get('/users', fn() => view('admin.users'))->name('admin.users');
+    Route::get('/profile', fn() => view('admin.profile'))->name('admin.profile');
 
-    Route::get('/users', function () {
-        return view('admin.users');
-    })->name('admin.users');
+    // =====================
+    // JOB CRUD
+    // =====================
+    Route::get('/jobs', [JobController::class, 'index'])->name('admin.jobs');
 
-    Route::get('/tests', function () {
-        return view('admin.tests');
-    })->name('admin.tests');
+    Route::get('/jobs/create', [JobController::class, 'create'])->name('admin.job.create');
+    Route::post('/jobs/store', [JobController::class, 'store'])->name('admin.job.store');
 
-    Route::get('/profile', function () {
-        return view('admin.profile');
-    })->name('admin.profile');
+    Route::get('/jobs/edit/{id}', [JobController::class, 'edit'])->name('admin.job.edit');
+    Route::post('/jobs/update/{id}', [JobController::class, 'update'])->name('admin.job.update');
 
+    Route::delete('/jobs/delete/{id}', [JobController::class, 'destroy'])->name('admin.job.delete');
 
-    // ===== ADMIN JOB MANAGEMENT (REAL CONTROLLER) =====
-    Route::get('/jobs', [\App\Http\Controllers\JobController::class, 'index'])
-        ->name('admin.jobs');
+    // =====================
+    // TEST QUESTIONS CRUD
+    // =====================
+    Route::get('/tests', [TestQuestionController::class, 'index'])->name('admin.tests');
 
-    Route::get('/jobs/create', [\App\Http\Controllers\JobController::class, 'create'])
-        ->name('admin.job.create');
+    Route::get('/tests/create', [TestQuestionController::class, 'create'])->name('admin.test.create');
+    Route::post('/tests/store', [TestQuestionController::class, 'store'])->name('admin.test.store');
 
-    Route::post('/jobs/store', [\App\Http\Controllers\JobController::class, 'store'])
-        ->name('admin.job.store');
+    Route::get('/tests/edit/{id}', [TestQuestionController::class, 'edit'])->name('admin.test.edit');
+    Route::post('/tests/update/{id}', [TestQuestionController::class, 'update'])->name('admin.test.update');
 
-    Route::get('/jobs/edit/{id}', [\App\Http\Controllers\JobController::class, 'edit'])
-        ->name('admin.job.edit');
+    Route::delete('/tests/delete/{id}', [TestQuestionController::class, 'destroy'])->name('admin.test.delete');
 
-    Route::post('/jobs/update/{id}', [\App\Http\Controllers\JobController::class, 'update'])
-        ->name('admin.job.update');
-
-    Route::get('/jobs/delete/{id}', [\App\Http\Controllers\JobController::class, 'delete'])
-        ->name('admin.job.delete');
+    Route::get('/debug-key', function () {
+    dd(env('GEMINI_API_KEY'));
 });
 
+});

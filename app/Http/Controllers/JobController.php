@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 
 class JobController extends Controller
 {
-    // Show all jobs (Admin Page)
+    // Show all jobs
     public function index()
     {
         $jobs = Job::all();
@@ -34,7 +34,7 @@ class JobController extends Controller
         return redirect()->route('admin.jobs')->with('success', 'Job added successfully!');
     }
 
-    // Show edit form
+    // ⭐ Show edit form (the missing part)
     public function edit($id)
     {
         $job = Job::findOrFail($id);
@@ -58,7 +58,7 @@ class JobController extends Controller
     }
 
     // Delete job
-    public function delete($id)
+    public function destroy($id)
     {
         Job::findOrFail($id)->delete();
 
