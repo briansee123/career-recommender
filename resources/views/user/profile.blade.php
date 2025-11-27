@@ -190,8 +190,8 @@
         <div class="dropdown-menu" id="dropdownMenu">
             <a href="{{ route('profile.show') }}">Profile</a>
 
-            <form action="{{ route('logout') }}" method="POST">
-                @csrf
+            <form action="/user/login" method="GET">
+                
                 <button type="submit" style="width:100%; border:none; background:none; padding:10px;">Logout</button>
             </form>
         </div>
